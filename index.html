@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>施工中</title>
+    <style>
+        /* 基础重置 */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fdfdfa; /* 默认白天 */
+            overflow: hidden;
+            font-family: sans-serif;
+            user-select: none; /* 防止拖拽时选中文本 */
+            -webkit-user-select: none;
+        }
+
+        /* ----------------------------------------------------
+           1. 图片容器
+           ---------------------------------------------------- */
+        .image-container {
+            width: 512px;
+            height: 384px;
+            border-radius: 12px;
+            overflow: hidden;
+            /* 无投影，无过渡 */
+        }
+
+        .image-container img {
+            display: block;
+            width: 512px; 
+            height: 384px;
+            object-fit: cover;
+            pointer-events: none; /* 防止拖拽图片 */
+        }
+
+        /* ----------------------------------------------------
+           2. 可拖拽拉线开关
+           ---------------------------------------------------- */
+        .switch-container {
+            position: absolute;
+            top: 0;
+            right: 100px;
+            z-index: 100;
+            cursor: grab; /* 手型提示 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 增大点击区域 */
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px; 
+        }
+
+        .switch-container:active {
+            cursor: grabbing; /* 抓取时手型 */
+        }
+
+        /* 线 */
+        .switch-line {
+            width: 2px;
+            height: 80px; /* 初始长度 */
+            background-color: #333;
+            /* 默认无 transition，保证拖拽跟手。回弹时通过 JS 添加 class 启用 transition */
+        }
+
+        /* 环/把手 */
+        .switch-handle {
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 3px solid #333;
+            border-radius: 50%;
+            margin-top: -2px; 
+            position: relative;
+        }
+
+        /* 回弹动画类：只在松开鼠标时添加此 class */
+        .spring-back .switch-line {
+            transition: height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ----------------------------------------------------
+           3. 夜间模式样式 (瞬间切换)
+           ---------------------------------------------------- */
+        body.night-mode {
+            background-color: #111113;
+        }
+
+        body.night-mode .switch-line {
+            background-color: #e0e0e0;
+        }
+        
+        body.night-mode .switch-handle {
+            background-color: #333;
+            border-color: #e0e0e0;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .image-container, .image-container img {
+                width: 90vw;
+                height: auto;
+            }
+            .switch-container {
+                right: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 拉线开关 -->
+    <div class="switch-container" id="themeSwitch">
+        <div class="switch-line" id="switchLine"></div>
+        <div class="switch-handle"></div>
+    </div>
+
+    <!-- 中心图片 -->
+    <div class="image-container">
+        <img id="scenicImage" src="./day.png" width="512" height="384" alt="Scenery">
+    </div>
+
+    <script>
+        const body = document.body;
+        const imgElement = document.getElementById('scenicImage');
+        const switchContainer = document.getElementById('themeSwitch');
+        const switchLine = document.getElementById('switchLine');
+        
+        const resources = { day: './day.png', night: './night.jpg' };
+        let isNight = false;
+
+        // --- 拖拽物理参数 ---
+        let isDragging = false;
+        let startY = 0;
+        let baseHeight = 80; // 线条初始高度
+        let currentHeight = 80;
+        const maxDragDistance = 150; // 最大下拉距离
+        const triggerThreshold = 50; // 触发切换的拉动阈值
+
+        // --- 1. 日夜切换逻辑 ---
+        function checkTimeAndSetTheme() {
+            const hour = new Date().getHours();
+            if (hour >= 6 && hour < 18) setDayMode();
+            else setNightMode();
+        }
+
+        function setDayMode() {
+            isNight = false;
+            body.classList.remove('night-mode');
+            imgElement.src = resources.day;
+        }
+
+        function setNightMode() {
+            isNight = true;
+            body.classList.add('night-mode');
+            imgElement.src = resources.night;
+        }
+
+        function toggleTheme() {
+            if (isNight) setDayMode();
+            else setNightMode();
+        }
+
+        // --- 2. 鼠标/触摸 拖拽逻辑 ---
+        
+        // 开始拖拽
+        function onDragStart(e) {
+            isDragging = true;
+            // 获取 Y 坐标 (兼容鼠标和触摸)
+            startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            // 移除回弹动画类，保证拖拽实时跟手
+            switchContainer.classList.remove('spring-back');
+        }
+
+        // 拖拽中
+        function onDragMove(e) {
+            if (!isDragging) return;
+
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            const deltaY = clientY - startY;
+
+            // 计算新高度 (只能向下拉，不能向上推小于初始高度)
+            if (deltaY > 0) {
+                // 增加阻尼感：拉得越长越难拉
+                const dampedDelta = Math.min(deltaY, maxDragDistance); 
+                currentHeight = baseHeight + dampedDelta;
+                switchLine.style.height = `${currentHeight}px`;
+            }
+        }
+
+        // 结束拖拽
+        function onDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+
+            // 判断是否触发切换
+            const draggedDistance = currentHeight - baseHeight;
+            
+            // 触发条件：下拉超过阈值，或者仅仅是点击(距离几乎为0)
+            // 注意：点击时 dragDistance 可能极其微小
+            if (draggedDistance > triggerThreshold) {
+                toggleTheme();
+            } else if (draggedDistance < 5) {
+                // 处理快速点击的情况
+                toggleTheme();
+            }
+
+            // 复位：添加回弹动画类，然后重置高度
+            switchContainer.classList.add('spring-back');
+            switchLine.style.height = `${baseHeight}px`;
+            currentHeight = baseHeight;
+        }
+
+        // --- 事件绑定 ---
+        
+        // 鼠标事件
+        switchContainer.addEventListener('mousedown', onDragStart);
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
+
+        // 触摸事件 (移动端支持)
+        switchContainer.addEventListener('touchstart', (e) => { e.preventDefault(); onDragStart(e); }, {passive: false});
+        window.addEventListener('touchmove', onDragMove, {passive: false});
+        window.addEventListener('touchend', onDragEnd);
+
+        // --- 初始化 ---
+        checkTimeAndSetTheme();
+
+    </script>
+</body>
+</html>
