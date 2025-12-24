@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日夜自动切换图片</title>
+    <title>施工中</title>
     <style>
         * {
             margin: 0;
@@ -15,55 +15,48 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 1s ease; /* 背景色平滑过渡 */
+            transition: background-color 1s ease;
         }
-        /* 图片固定显示512*384px，支持@2x高清 */
         .main-img {
             width: 512px;
             height: 384px;
-            object-fit: contain; /* 保持图片比例不拉伸 */
-            image-rendering: optimizeQuality; /* 高清渲染 */
+            object-fit: contain;
+            image-rendering: optimizeQuality;
         }
     </style>
 </head>
 <body>
-    <!-- 核心图片元素 -->
     <img id="imgContainer" class="main-img" src="" alt="日夜切换图" srcset="">
 
     <script>
-        // ========== 可自定义配置 ==========
         const CONFIG = {
-            dayImg: 'day.jpg',       // 白天图片路径（1024*768px）
-            nightImg: 'night.jpg',   // 夜晚图片路径（1024*768px）
-            dayStart: 6,             // 白天开始时间（小时，24制）
-            dayEnd: 18,              // 白天结束时间（小时，24制）
-            dayBg: '#FFFFFF',        // 白天背景色
-            nightBg: '#111113'       // 夜晚背景色
+            // 关键：改成相对路径，指向images文件夹下的图片
+            dayImg: './images/day.jpg',    
+            nightImg: './images/night.jpg',
+            dayStart: 6,             
+            dayEnd: 18,              
+            dayBg: '#FFFFFF',        
+            nightBg: '#111113'       
         };
 
-        // ========== 核心逻辑 ==========
         const imgEl = document.getElementById('imgContainer');
 
-        // 判断当前是否为白天（按本地时间小时）
         function isDaytime() {
-            const nowHour = new Date().getHours(); // 获取本地时间小时（0-23）
+            const nowHour = new Date().getHours();
             return nowHour >= CONFIG.dayStart && nowHour < CONFIG.dayEnd;
         }
 
-        // 设置图片和背景（支持@2x高清）
         function setTheme() {
             const isDay = isDaytime();
             const imgSrc = isDay ? CONFIG.dayImg : CONFIG.nightImg;
-            
-            // 配置@2x高清显示（原图1024px是显示512px的2倍）
+            // 高清@2x显示（原图1024px是显示512px的2倍）
             imgEl.srcset = `${imgSrc} 2x`;
-            imgEl.src = imgSrc; // 降级兼容不支持srcset的浏览器
+            imgEl.src = imgSrc;
             document.body.style.backgroundColor = isDay ? CONFIG.dayBg : CONFIG.nightBg;
         }
 
-        // 初始化 + 每小时刷新一次（避免跨时段不切换）
         setTheme();
-        setInterval(setTheme, 3600000); // 3600000毫秒 = 1小时
+        setInterval(setTheme, 3600000);
     </script>
 </body>
 </html>
