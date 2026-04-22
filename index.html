@@ -15,6 +15,10 @@
             background-color: #F4F4F4;
             padding: 48px 24px;
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            /* 相对定位，用于版权信息定位 */
+            position: relative;
+            /* 底部留出版权信息空间 */
+            padding-bottom: 60px;
         }
 
         .grid-container {
@@ -81,6 +85,17 @@
             opacity: 1;
         }
 
+        /* 版权信息样式 */
+        .copyright {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #999; /* 浅灰色 */
+            text-align: center;
+        }
+
         @media (max-width: 1380px) {
             .grid-container {
                 grid-template-columns: repeat(2, 400px);
@@ -131,67 +146,70 @@
                 <h3>MagiCam</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="7"></div>
             <div class="overlay">
                 <h3>TextOne</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="8"></div>
             <div class="overlay">
                 <h3>Safe Wallet</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="9"></div>
             <div class="overlay">
                 <h3>CM SafeBox</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="10"></div>
             <div class="overlay">
                 <h3>Charge Master</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="11"></div>
             <div class="overlay">
                 <h3>必来加速器</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="12"></div>
             <div class="overlay">
                 <h3>BTNEX</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="13"></div>
             <div class="overlay">
                 <h3>FIRESED</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="14"></div>
             <div class="overlay">
                 <h3>月轮加速器</h3>
             </div>
         </div>
-            <div class="grid-item">
+        <div class="grid-item">
             <div data-media="15"></div>
             <div class="overlay">
                 <h3>豹来电</h3>
             </div>
-         </div>
-            <div class="grid-item">
+        </div>
+        <div class="grid-item">
             <div data-media="16"></div>
             <div class="overlay">
                 <h3>小花教育</h3>
             </div>
-
+        </div>
     </div>
+
+    <!-- 版权信息 -->
+    <div class="copyright">© Designed by DY</div>
 
     <script>
         document.querySelectorAll('[data-media]').forEach(container => {
@@ -202,7 +220,8 @@
             function tryLoad() {
                 if (index >= formats.length) return;
                 const ext = formats[index];
-                const path = name + '.' + ext;
+                // 核心修改：路径前添加 img/ 文件夹前缀
+                const path = `img/${name}.${ext}`;
 
                 if (ext === 'mp4') {
                     const video = document.createElement('video');
