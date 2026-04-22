@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Icon Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #F4F4F4;
+            padding: 48px 24px;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        .grid-container {
+            max-width: 1344px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 400px);
+            gap: 48px;
+            justify-content: center;
+        }
+
+        .grid-item {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            border-radius: 24px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .grid-item img,
+        .grid-item video {
+            width: 400px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover img,
+        .grid-item:hover video {
+            transform: scale(1.03);
+        }
+
+        video {
+            outline: none;
+            border: none;
+        }
+
+        .grid-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 24%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.4));
+            display: flex;
+            align-items: flex-end;
+            padding: 16px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 0 0 24px 24px;
+            z-index: 10;
+        }
+
+        /* 标题字体大小改为 14px */
+        .grid-item .overlay h3 {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .grid-item:hover .overlay {
+            opacity: 1;
+        }
+
+        @media (max-width: 1380px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 400px);
+            }
+        }
+        @media (max-width: 920px) {
+            .grid-container {
+                grid-template-columns: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <div class="grid-item">
+            <div data-media="1"></div>
+            <div class="overlay">
+                <h3>CM Snapshare</h3>
+            </div>
+        </div>
+        <div class="grid-item">
+            <div data-media="2"></div>
+            <div class="overlay">
+                <h3>archeryX</h3>
+            </div>
+        </div>
+        <div class="grid-item">
+            <div data-media="3"></div>
+            <div class="overlay">
+                <h3>CM Swipe</h3>
+            </div>
+        </div>
+        <div class="grid-item">
+            <div data-media="4"></div>
+            <div class="overlay">
+                <h3>OneTap Booster</h3>
+            </div>
+        </div>
+        <div class="grid-item">
+            <div data-media="5"></div>
+            <div class="overlay">
+                <h3>MagiCam</h3>
+            </div>
+        </div>
+        <div class="grid-item">
+            <div data-media="6"></div>
+            <div class="overlay">
+                <h3>MagiCam</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="7"></div>
+            <div class="overlay">
+                <h3>TextOne</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="8"></div>
+            <div class="overlay">
+                <h3>Safe Wallet</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="9"></div>
+            <div class="overlay">
+                <h3>CM SafeBox</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="10"></div>
+            <div class="overlay">
+                <h3>Charge Master</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="11"></div>
+            <div class="overlay">
+                <h3>必来加速器</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="12"></div>
+            <div class="overlay">
+                <h3>BTNEX</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="13"></div>
+            <div class="overlay">
+                <h3>FIRESED</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="14"></div>
+            <div class="overlay">
+                <h3>月轮加速器</h3>
+            </div>
+        </div>
+            <div class="grid-item">
+            <div data-media="15"></div>
+            <div class="overlay">
+                <h3>豹来电</h3>
+            </div>
+         </div>
+            <div class="grid-item">
+            <div data-media="16"></div>
+            <div class="overlay">
+                <h3>小花教育</h3>
+            </div>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('[data-media]').forEach(container => {
+            const name = container.getAttribute('data-media');
+            const formats = ['webp', 'jpg', 'png', 'gif', 'mp4'];
+            let index = 0;
+
+            function tryLoad() {
+                if (index >= formats.length) return;
+                const ext = formats[index];
+                const path = name + '.' + ext;
+
+                if (ext === 'mp4') {
+                    const video = document.createElement('video');
+                    video.src = path;
+                    video.muted = true;
+                    video.loop = true;
+                    video.autoplay = true;
+                    video.playsinline = true;
+                    container.appendChild(video);
+                } else {
+                    const img = new Image();
+                    img.src = path;
+                    img.alt = name;
+                    container.appendChild(img);
+                }
+
+                container.firstChild.onload = () => {};
+                container.firstChild.onloadeddata = () => {};
+                container.firstChild.onerror = () => {
+                    container.innerHTML = '';
+                    index++;
+                    tryLoad();
+                };
+            }
+            tryLoad();
+        });
+    </script>
+</body>
+</html>
